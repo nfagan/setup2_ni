@@ -21,12 +21,14 @@ classdef TaskInterface < handle
     bypass_npxi_events = true;
     bypass_laser = true;
     bypass_reward = false;
-    use_setup3_reward = true;
+    bypass_sync_interface = false;
+    use_setup3_reward = false;
 
     laser_port = 'COM4';
 
     matlab_time;
     video_interface;
+    sync_interface;
     ni_interface;
     gaze_tracker;
     setup3_reward_interface;
@@ -112,6 +114,11 @@ classdef TaskInterface < handle
       r = seconds( datetime() - obj.t0 );
     end
 
+    function set_t0(obj, t0)
+      obj.t0 = t0;
+      obj.matlab_time.clock_t0 = t0;
+    end
+
     function initialize(obj)
       ParallelErrorChecker.clear_error( TaskInterface.TASK_ABORTED_FILE_PREFIX );
 
@@ -128,6 +135,12 @@ classdef TaskInterface < handle
       %
       obj.ni_interface = NIInterface( obj.bypass_ni );
       initialize( obj.ni_interface, fullfile(obj.data_p, 'ni.bin') );
+
+      % sync interface
+      %
+      %
+      obj.sync_interface = SyncInterface( 2, obj.bypass_sync_interface );
+      initialize( obj.sync_interface );
 
       %
       %
@@ -184,6 +197,9 @@ classdef TaskInterface < handle
       % video interface is deleted (bc the video data may be needed
       % as part of the task data shutdown procedure).
       delete( obj.task_data );
+      % @NOTE: sync interface should be deleted after task data, to allow
+      % its data to be saved
+      delete( obj.sync_interface );
       delete( obj.video_interface );
       delete( obj.laser_interface );
       delete( obj.npxi_events );

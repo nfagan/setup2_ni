@@ -2,6 +2,7 @@ classdef TaskData < handle
   properties
     entries;
     video_interface;
+    sync_interface;
     save_p;
     save_filename;
     matlab_time;
@@ -35,6 +36,12 @@ classdef TaskData < handle
         vid_data = get_saveable_data( obj.video_interface );
       end
 
+      if ( isempty(obj.sync_interface) )
+        sync_data = [];
+      else
+        sync_data = get_saveable_data( obj.sync_interface );
+      end
+
       try
         [m1_calib_p, m2_calib_p] = get_latest_fv_far_plane_calibration_file_names();        
       catch err
@@ -63,6 +70,7 @@ classdef TaskData < handle
         , 'far_plane_calibration', struct('m1', m1_calib, 'm2', m2_calib) ...
         , 'matlab_time', mt ...
         , 'params', obj.params ...
+        , 'sync', sync_data ...
       );
     end
     

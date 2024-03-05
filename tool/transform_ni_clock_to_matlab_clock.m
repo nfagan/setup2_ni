@@ -1,7 +1,7 @@
 function ni_t = transform_ni_clock_to_matlab_clock(...
   ni_sync_channel, vid_ts, clock_t0, extrapolate)
 
-FS = 1e3; % ni sample rate
+FS = NIInterface.get_sample_rate(); % ni sample rate
 
 validateattributes( ni_sync_channel, {'double'}, {'vector'}, mfilename, 'ni_sync_channel' );
 validateattributes( vid_ts, {'datetime'}, {}, mfilename, 'vid_ts' );
@@ -11,15 +11,24 @@ if ( nargin < 4 )
   extrapolate = false;
 end
 
-is_pos = ni_sync_channel > 0.99;
+is_pos = get_ni_sync_pulse( ni_sync_channel );
 [npxi_isles, npxi_durs] = shared_utils.logical.find_islands( is_pos );
 
-sync_ts = npxi_isles(1:2:end);
-sync_ts = sync_ts(1:size(vid_ts, 1));
+prefer_laser_sync = true;
+if ( prefer_laser_sync )
+  sync_ts = npxi_isles(1);
+else
+  sync_ts = npxi_isles(1:2:end);
+  sync_ts = sync_ts(1:size(vid_ts, 1)); 
+end
 
-% clock_t0 is the canonical t0 for task events
-vid_t_offset = vid_ts - clock_t0;
-sec_offset = seconds( vid_t_offset );
+if ( prefer_laser_sync )
+  sec_offset = 0;
+else
+  % clock_t0 is the canonical t0 for task events
+  vid_t_offset = vid_ts - clock_t0;
+  sec_offset = seconds( vid_t_offset );
+end
 
 ni_t = nan( numel(ni_sync_channel), 1 );
 

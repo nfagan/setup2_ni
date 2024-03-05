@@ -38,7 +38,7 @@ full_screens = true;
 max_num_trials = 50;
 
 draw_m2_eye_roi = false;
-draw_m1_gaze = false;
+draw_m1_gaze = true;
 draw_m2_gaze = false;
 draw_m2_eye_cue = false;
 always_draw_spatial_rule_outline = true;
@@ -52,12 +52,12 @@ timing = struct();
 %%% stages of the task
 % 1 fixation with block rule
 enbale_fixation_with_block_rule = true;
-timing.initial_fixation_duration_m1 = 0.1;
-timing.initial_fixation_duration_m2 = 0.3;
+timing.initial_fixation_duration_m1 = 0.2;
+timing.initial_fixation_duration_m2 = 0.2;
 timing.initial_fixation_state_duration = 1.5;
 
 timing.initial_reward_m1 = 0.1;
-timing.initial_reward_m2 = 0.1;
+timing.initial_reward_m2 = 0.0;
 timing.init_reward_m1_m2 = 0.2;
 
 % 2 spatial rule
@@ -74,7 +74,7 @@ timing.spatial_rule_reward_m1_m2 = 0.4;
 
 
 % 3 gaze_delay
-enable_gaze_triggered_delay = true;
+enable_gaze_triggered_delay = false;
 timing.gaze_triggered_delay = 1;
 timing.gaze_delay_reward_m1 = 0.05;
 timing.gaze_delay_reward_m2 = 0.00;
@@ -87,7 +87,7 @@ enable_spatial_cue = true;
 timing.spatial_cue_state_duration = 1.5;
 timing.spatial_cue_state_chooser_duration = 0.8;
 timing.spatial_cue_reward_m1 = 0.0;
-timing.spatial_cue_reward_m2 = 0.9;
+timing.spatial_cue_reward_m2 = 0.45;
 timing.spatial_cue_reward_m1_m2 = 0.0;
 
 
@@ -105,12 +105,12 @@ enable_actor_response = true;
 timing.actor_response_state_duration = 2;
 timing.actor_response_state_chooser_duration = 0.15;
 
-timing.actor_response_state_chooser_duration_left = 0.5;
-timing.actor_response_state_chooser_duration_right = 0.1;
+timing.actor_response_state_chooser_duration_left = 0.85;
+timing.actor_response_state_chooser_duration_right = 0.01;
 
 
 timing.actor_response_state_signaler_duration = 0.0;
-timing.actor_response_reward_m1 = 0.95;
+timing.actor_response_reward_m1 = 0.45;
 timing.actor_response_reward_m2 = 0.0;
 
 % 7 feedback & reward
@@ -134,16 +134,16 @@ name_of_m2 ='M2_ephron';% 'Hitch';
 %{
   stimuli parameters
 %}
-fix_cross_size = 150; % px
-fix_target_size = 150; % px
+fix_cross_size = 130; % px
+fix_target_size = 130; % px
 fix_circular_size = 150;
-error_square_size = 150;
+error_square_size = 130;
 lr_eccen = 0; % px amount to shift left and right targets towards screen edges
 
 % add +/- target_padding
 target_padding = 120;
 cross_padding = 120;
-circular_padding = 130;
+circular_padding = 100;
 
 % sptial rule width
 spatial_rule_width = 10;
@@ -177,7 +177,10 @@ end
 %{
   remap target and stimuli
 %}
-screen_height = 7.4;% cm
+
+m1_to_monitor = 43.8;%cm
+m2_to_monitor = 50;%cm
+screen_height = 7.5;% cm
 monitor_height = 27.3;% cm
 if enable_remap
 %   prompt = {'Enter left screen height (cm):'};
@@ -219,6 +222,8 @@ task_params.center_screen_m2 = center_screen_m2;
 task_params.trial_generator = trial_generator;
 task_params.gaze_coord_transform = task_interface.gaze_tracker.gaze_coord_transform;
 task_params.screen_height = screen_height;
+task_params.m1_to_monitor = m1_to_monitor;
+task_params.m2_to_monitor = m2_to_monitor;
 task_params.monitor_height = monitor_height;
 task_params.center_screen_m1 = center_remap_m1;
 task_params.center_screen_m1 = center_remap_m1;
@@ -362,7 +367,7 @@ while ( ~ptb.util.is_esc_down() && ...
     if acquired_m1 & acquired_m2
       ['both initial success']
       WaitSecs( max(timing.initial_reward_m1, timing.initial_reward_m2) + timing.waitSecs);
-      deliver_reward( task_interface, 0:1, timing.init_reward_m1_m2);
+      deliver_reward( task_interface, 0, timing.init_reward_m1_m2);
 %       deliver_reward( task_interface, 0, timing.init_reward_m1_m2);
     end
   end

@@ -210,6 +210,16 @@ classdef NIInterface < handle
       r = empty_update_result();
     end
 
+    function r = get_sample_rate()
+
+      %   GET_SAMPLE_RATE -- Get sample rate of DAQ
+      %
+      %     See also NIInterface
+
+      res = NIInterface.get_meta_info_impl();
+      r = res.sample_rate;
+    end
+
     function r = get_sync_pulse_hz()
 
       %   GET_SYNC_PULSE_HZ -- Get counter output synchronization pulse

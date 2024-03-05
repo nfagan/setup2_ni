@@ -17,7 +17,7 @@ int main(int, char**) {
 
   auto t0 = time::now();
   auto pulse_t0 = time::now();
-  while (time::Duration(time::now() - t0).count() < 10.0) {
+  while (time::Duration(time::now() - t0).count() < 60.0) {
     task::update_ni();
 
     auto samp = task::read_latest_sample();
@@ -26,7 +26,7 @@ int main(int, char**) {
            samp.sync, samp.pupil1, samp.x1, samp.y1, samp.pupil2, samp.x2, samp.y2);
 #endif
 
-#if 1
+#if 0
     if (time::Duration(time::now() - pulse_t0).count() > 2.0) {
 #if 1
       for (int i = 0; i < 2; i++) {

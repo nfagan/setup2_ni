@@ -37,7 +37,7 @@ classdef FixationStateTracker < handle
            obj.ib = true;
          else
            info.ib_t = t - obj.entered_ts(end);
-           info.entry_t = obj.entered_ts(end);
+           info.ib_entry_t = obj.entered_ts(end);
          end
          if ( ~obj.acquired && t - obj.entered_ts(end) >= fix_time )
            %  successful acquistiion

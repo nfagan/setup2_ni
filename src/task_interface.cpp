@@ -23,7 +23,7 @@ namespace {
  */
 
 struct Config {
-  static constexpr double sample_rate = 1000.0;
+  static constexpr double sample_rate = 10000.0;
   static constexpr int num_samples_per_channel = 5;
   static constexpr double sync_pulse_hz = 90.0;
   //  @NOTE: This is the time between initializing the sync pulse counter
@@ -330,6 +330,7 @@ task::MetaInfo task::get_meta_info() {
   task::MetaInfo result{};
   result.sync_pulse_init_timeout_s = Config::sync_pulse_init_timeout_s;
   result.sync_pulse_hz = Config::sync_pulse_hz;
+  result.sample_rate = Config::sample_rate;
   return result;
 }
 
