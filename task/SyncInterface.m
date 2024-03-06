@@ -66,12 +66,11 @@ classdef SyncInterface < handle
     end
 
     function initialize(obj)
-      shutdown( obj );
       initialize( obj.interface );
     end
 
     function shutdown(obj)
-      shutdown( obj.interface );
+      delete( obj.interface );
     end
 
     function delete(obj)

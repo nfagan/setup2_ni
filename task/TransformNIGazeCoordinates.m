@@ -18,6 +18,14 @@ classdef TransformNIGazeCoordinates < handle
       obj.calibration_rect_m2 = r;
     end
 
+    function r = padded_rect_m1(obj)
+      r = padded_rect( obj.calibration_rect_m1, obj.padding_frac );
+    end
+
+    function r = padded_rect_m2(obj)
+      r = padded_rect( obj.calibration_rect_m2, obj.padding_frac );
+    end
+
     function [x, y] = scale_coords_m1(obj, x, y)
       vlims = TransformNIGazeCoordinates.vlims;
       padding_frac = TransformNIGazeCoordinates.padding_frac;
@@ -32,6 +40,21 @@ classdef TransformNIGazeCoordinates < handle
       [x, y] = transform_gaze_coords( x, y, vlims, calib_rect, padding_frac );
     end
   end
+end
+
+function r = padded_rect(r, padding_frac)
+
+w = diff( r([1, 3]) );
+h = diff( r([2, 4]) );
+
+w = w + w * padding_frac(1);
+h = h + h * padding_frac(2);
+
+cx = mean( r([1, 3]) );
+cy = mean( r([2, 4]) );
+
+r = [ cx - w * 0.5, cy - h * 0.5, cx + w * 0.5, cy + h * 0.5 ];
+
 end
 
 function [x, y] = transform_gaze_coords(vx, vy, vlims, base_rect, padding_frac)

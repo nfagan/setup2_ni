@@ -42,7 +42,7 @@ draw_m1_gaze = false;
 draw_m2_gaze = false;
 draw_m2_eye_cue = false;
 always_draw_spatial_rule_outline = true;
-enable_remap = true;
+enable_remap = false;
 verbose = false;
 
 %{
@@ -166,6 +166,7 @@ lr_eccen = 0; % px amount to shift left and right targets towards screen edges
 
 % add +/- target_padding
 padding_angl = 3;
+% padding_angl = 0;
 visanglex = padding_angl;
 visangley = padding_angl;
 [target_padding_m1,sizey_m1] = visangle2stimsize(visanglex,visangley,totdist_m1,screenwidth,screenres);
@@ -244,6 +245,11 @@ if enable_remap
   center_screen_m2 = [0.5*win_m2.Width,y_axis_screen*win_m2.Height];
   center_remap_m1 = [0.5*win_m1.Width,y_axis_remap*win_m1.Height];
   center_remap_m2 = [0.5*win_m2.Width,y_axis_remap*win_m2.Height];
+else
+  center_screen_m1 = win_m1.Center;
+  center_screen_m2 = win_m2.Center;
+  center_remap_m1 = center_screen_m1;
+  center_remap_m2 = center_screen_m2;
 end
 
 % task interface
@@ -375,6 +381,9 @@ while ( ~ptb.util.is_esc_down() && ...
 
   trial_rec.trial_descriptor = trial_desc;
   trial_rec.gaze_triggered_delay = struct();
+  trial_rec.trial_start = struct();
+  trial_rec.trial_start.time = time_cb();
+  default_trigger( task_interface.sync_interface, 0 );
 
   %{
     debug gaze-triggered delay
@@ -397,9 +406,8 @@ while ( ~ptb.util.is_esc_down() && ...
   %}
   
   if enbale_fixation_with_block_rule
-
-
     [trial_rec.fixation_with_block_rule, acquired_m1,acquired_m2] = state_fixation_with_block_rule();
+
     ['m1 initial:';'m2 initial:']
     m1_correct = m1_correct+acquired_m1;
     m2_correct = m2_correct+acquired_m2;
@@ -613,11 +621,12 @@ function [res, acquired_m1,acquired_m2] = state_fixation_with_block_rule()
 
   loc_draw_cb = wrap_draw(...
     {@draw_fixation_crosses, @maybe_draw_gaze_cursors},1,1);
+%   loc_draw_cb = @do_draw;
 
   [fs_m1, fs_m2] = joint_fixation2( ...
     @time_cb, loc_draw_cb ...
-    , @() rect_pad(m1_centered_rect_remap(fix_cross_size_m1), cross_padding_m1), @get_m1_position ...
-    , @() rect_pad(m2_centered_rect_remap(fix_cross_size_m2), cross_padding_m2), @get_m2_position ...
+    , @m1_rect, @get_m1_position ...
+    , @m2_rect, @get_m2_position ...
     , @local_update ...
     , timing.initial_fixation_duration_m1...
     , timing.initial_fixation_duration_m2...
@@ -634,10 +643,29 @@ function [res, acquired_m1,acquired_m2] = state_fixation_with_block_rule()
   acquired_m2 = fs_m2.ever_acquired;
   acquired = fs_m1.acquired && fs_m2.acquired;
 
+  function r = m1_rect()
+    r = rect_pad(m1_centered_rect_remap(fix_cross_size_m1), cross_padding_m1);
+  end
+
+  function r = m2_rect()
+    r = rect_pad(m2_centered_rect_remap(fix_cross_size_m2), cross_padding_m2);
+  end
+
+  function do_draw()
+    fill_rect( win_m1, [0, 255, 0], m1_rect() );
+    fill_rect( win_m2, [0, 255, 0], m2_rect() );
+    if ( 1 )
+      fill_oval( win_m1, [255, 0, 255], centered_rect(get_m1_position(), 50) );
+      fill_oval( win_m2, [255, 0, 255], centered_rect(get_m2_position(), 50) );
+    end
+    flip( win_m1, false );
+    flip( win_m2, false );
+  end
+
   function m1_acquire_cb()
-    default_trigger_async( task_interface.sync_interface, 0 );
+%     default_trigger_async( task_interface.sync_interface, 0 );
     deliver_reward(task_interface, 0, timing.initial_reward_m1);
-    default_trigger_async( task_interface.sync_interface, 0 );
+%     default_trigger_async( task_interface.sync_interface, 0 );
   end
 
   function m2_acquire_cb()
@@ -1090,7 +1118,6 @@ function draw_error(show_m1, show_m2)
 end
 
 function draw_fixation_crosses()
-
   draw_texture( win_m1, cross_im, m1_centered_rect_screen(fix_cross_size_m1) );
   draw_texture( win_m2, cross_im, m2_centered_rect_screen(fix_cross_size_m2) );
 end
@@ -1137,11 +1164,11 @@ function rs = rect_pad(rs, target_padding)
 
   function r = do_pad(r, target_padding)
     if ( numel(target_padding) == 1 )
-      r([1, 2]) = r([1, 2]) - target_padding;
-      r([3, 4]) = r([3, 4]) + target_padding;
+      r([1, 2]) = r([1, 2]) - target_padding * 0.5;
+      r([3, 4]) = r([3, 4]) + target_padding * 0.5;
     else
-      r([1, 2]) = r([1, 2]) - target_padding(1);
-      r([3, 4]) = r([3, 4]) + target_padding(2);
+      r([1, 2]) = r([1, 2]) - target_padding(1) * 0.5;
+      r([3, 4]) = r([3, 4]) + target_padding(2) * 0.5;
     end
   end
 end

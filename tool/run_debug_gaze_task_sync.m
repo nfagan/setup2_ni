@@ -2,6 +2,15 @@ sd = debug_gaze_task_sync();
 
 %%
 
+rect_m1 = sd.gaze_coord_transform.padded_rect_m1();
+% 16bit ADC resolution for NI
+ni_adc_res = double( intmax('uint16') );
+w = diff( rect_m1([1, 3]) );
+h = diff( rect_m1([2, 4]) );
+ni_limited_res = [ w, h ] ./ ni_adc_res;
+
+%%
+
 win_rect = sd.gaze_coord_transform.calibration_rect_m1;
 
 ni = read_ni_data( fullfile(pwd, 'ni.bin') );
