@@ -239,7 +239,7 @@ set( vi_src, 'TriggerMode', 'On' );
 set( vi_src, 'TriggerSource', 'Line3' );
 
 if ( 1 )
-  set( vi1, 'ROIPosition', [0, 0, 320, 256] );
+  set( vi1, 'ROIPosition', [0, 0, 1280, 1024] );
 end
 
 triggerconfig( vi1, 'hardware', 'DeviceSpecific' );

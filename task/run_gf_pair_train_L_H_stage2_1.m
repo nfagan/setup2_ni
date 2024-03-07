@@ -1,4 +1,4 @@
-function run_gf_pair_train_T_H_stage2()
+function run_gf_pair_train_L_H_stage2_1()
 
 cd 'C:\Users\setup2\source\setup2_ni\deps\network-events\Resources\Matlab';
 
@@ -57,7 +57,7 @@ timing.initial_fixation_duration_m2 = 0.1;
 timing.initial_fixation_state_duration = 1.5;
 
 timing.initial_reward_m1 = 0.25;
-timing.initial_reward_m2 = 0.45;
+timing.initial_reward_m2 = 0.35;
 timing.init_reward_m1_m2 = 0.45;
 
 % 2 spatial rule
@@ -76,8 +76,8 @@ timing.spatial_rule_reward_m1_m2 = 0.1;
 % 3 gaze_delay
 enable_gaze_triggered_delay = true;
 timing.gaze_triggered_delay = 0.8;
-timing.gaze_delay_reward_m1 = 0.9;
-timing.gaze_delay_reward_m2 = 0.9;
+timing.gaze_delay_reward_m1 = 0.7;
+timing.gaze_delay_reward_m2 = 0.7;
 timing.gaze_delay_reward_m1_m2 = 0.0;
 timing.gaze_delay_fixation_time = 0.0;
 
@@ -133,7 +133,7 @@ timing.overlap_duration_to_exit = nan;
 %{
 name of monkeys
 %}
-name_of_m1 ='M1_tara';% 'lynch';%'M1_simu';
+name_of_m1 ='M1_lynch';% 'lynch';%'M1_simu';
 name_of_m2 ='M2_hitch';% 'Hitch';
 %{
   stimuli parameters
